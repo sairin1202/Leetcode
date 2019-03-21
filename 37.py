@@ -1,15 +1,13 @@
 from copy import deepcopy
 
-# each place maintain a 10-length array
-# index 1-9:  0-the number can not be replaced , 1-the number can be replaced
-
-
 class Solution(object):
 
     def __init__(self):
         self.board = None
         self.relate = {}
+        self.count= 0
     def solve_(self, board, idx, mat, visit):
+        self.count+=1
         if idx == len(visit):
             self.board = board
             return 1
@@ -19,20 +17,21 @@ class Solution(object):
 
         for i in range(1,10):
             if mat[row][col][i] == 1:
-                mat_c = deepcopy(mat)
-                board_c = deepcopy(board)
-                mat_c[row][col][0] = -1
-                # revise the value in related place
+                record = []
                 for cor in self.relate[(row,col)]:
                     x = cor[0]
                     y = cor[1]
-                    mat_c[x][y][i] = 0
-                board_c[row][col] = str(i)
-                # next recursion
-                if self.solve_(board_c, idx+1, mat_c, visit):
+                    if mat[x][y][i] == 1:
+                        record.append((x,y))
+                    mat[x][y][i] = 0
+                board[row][col] = str(i)
+                if self.solve_(board, idx+1, mat, visit):
                     return 1
+                for cor in record:
+                    x = cor[0]
+                    y = cor[1]
+                    mat[x][y][i] = 1
         return 0
-
 
 
     def solveSudoku(self, board):
@@ -47,7 +46,6 @@ class Solution(object):
         for i in range(9):
             for j in range(9):
                 if board[i][j] != ".":
-                    mat[i][j][0] = -1
                     for m in range(9):
                         mat[i][m][int(board[i][j])] = 0
                     for m in range(9):
@@ -71,8 +69,8 @@ class Solution(object):
                                 self.relate[(i,j)] = [(y,j)]
                             else:
                                 self.relate[(i,j)].append((y,j))
-                    for m in range(i%3, 3):
-                        for n in range(j%3, 3):
+                    for m in range(3):
+                        for n in range(3):
                             if board[i//3*3+m][j//3*3+n] == ".":
                                 if (i,j) not in self.relate:
                                     self.relate[(i,j)] = [(i//3*3+m,j//3*3+n)]
