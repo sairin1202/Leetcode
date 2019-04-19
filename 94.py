@@ -6,19 +6,27 @@
 #         self.right = None
 
 class Solution(object):
-    def __init__(self):
-        self.res = []
-
-    def inorder(self, root):
-        if root:
-            self.inorder(root.left)
-            self.res.append(root.val)
-            self.inorder(root.right)
 
     def inorderTraversal(self, root):
         """
         :type root: TreeNode
         :rtype: List[int]
         """
-        self.inorder(root)
-        return self.res
+        if root == None:
+            return []
+        res = []
+        stack = [[root, 0]]
+        while stack:
+            cur, sign = stack[-1]
+            if sign == 1:
+                cur, sign = stack.pop()
+                res.append(cur.val)
+                if cur.right:
+                    stack.append([cur.right, 0])
+                continue
+            stack[-1][1] = 1
+            if cur.left:
+                stack.append([cur.left, 0])
+                continue
+        return res
+                
